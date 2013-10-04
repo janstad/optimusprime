@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 using System.Xml;
 using HtmlAgilityPack;
+using OptimusPrime.Helpers;
 using OptimusPrime.Interfaces;
 using SKYPE4COMLib;
 
@@ -25,10 +28,11 @@ namespace OptimusPrime.Listeners
             {
                 case "IMDB.COM":
                     return GetImdbString(url);
+                //case "OPEN.SPOTIFY.COM":
+                //    return GetSpotifyString(url);
             }
 
-
-            return string.Empty;
+            return GetUrlTitle(url);
         }
 
         private string GetHostName(string pUrl)
@@ -37,27 +41,20 @@ namespace OptimusPrime.Listeners
             return uri.Host.Replace("www.", "");
         }
 
+        private string GetSpotifyString(string pUrl)
+        {
+
+
+
+            return string.Empty;
+        }
+
         private string GetImdbString(string pUrl)
         {
-            //var uri = new Uri(pUrl);
-
-            //var imdbId = uri.AbsolutePath.Replace("/title/", "");
-            //var url = "http://www.omdbapi.com/?i=" + imdbId;
-
-            //HtmlDocument doc;
-            //using (var wc = new WebClient())
-            //{
-            //    doc = new HtmlDocument();
-            //    doc.Load(wc.OpenRead(url));
-            //}
-
-
-            //var x = new XmlDocument();
-
             var title = GetUrlTitle(pUrl);
             var rating = GetImdbRating(pUrl);
 
-            return string.Format("{0}\n{1}", title, rating);
+            return string.Format(@"{0}|\n{1}", title, rating);
         }
 
         private string GetImdbRating(string pUrl)
@@ -68,7 +65,7 @@ namespace OptimusPrime.Listeners
                 using (var wc = new WebClient())
                 {
                     doc = new HtmlDocument();
-                    doc.Load(wc.OpenRead(pUrl));
+                    doc.Load(wc.OpenRead(pUrl), true);
                 }
 
                 var metaTag = doc.DocumentNode.SelectSingleNode("//div[@class='star-box-details']");
@@ -95,12 +92,17 @@ namespace OptimusPrime.Listeners
                 using (var wc = new WebClient())
                 {
                     doc = new HtmlDocument();
-                    doc.Load(wc.OpenRead(pUrl), Encoding.UTF8);
+                    doc.Load(wc.OpenRead(pUrl), true);
                 }
 
-                var metaTags = doc.DocumentNode.SelectNodes("//title");
+                var titleNode = doc.DocumentNode.SelectSingleNode("//title");
 
-                return metaTags != null ? metaTags[0].InnerText.Trim() : string.Empty;
+                if (titleNode == null) return string.Empty;
+                var title = HttpUtility.HtmlDecode(titleNode.InnerText);
+
+                if (title.Contains("\n")) title = title.Replace("\n", "");
+
+                return title;
             }
             catch (Exception)
             {

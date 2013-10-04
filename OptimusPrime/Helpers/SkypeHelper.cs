@@ -76,10 +76,10 @@ namespace OptimusPrime.Helpers
         private void SendMessage(string pReturnMessage, ChatMessage pMsg)
         {
             var message = string.Format("{0} {1}", cBotPrefix, pReturnMessage); // Add prefix
+            message = message.Replace("|\\n", "\n");
 
-            if (pReturnMessage.Contains("|")) //message is multi line
+            if (pReturnMessage.Contains("\n")) //message is multi line
             {
-                message = message.Replace("|", "\n");
                 mSkype.SendMessage(pMsg.Sender.Handle, message); //send pm
             }
             else

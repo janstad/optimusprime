@@ -93,7 +93,7 @@ namespace OptimusPrime.Listeners
 
                 }
                 Array.Sort(arrNodes); //Sort A-Z
-                return String.Join("|", arrNodes);
+                return String.Join("\n", arrNodes);
 
             }
             catch (Exception)

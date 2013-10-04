@@ -111,14 +111,14 @@ namespace OptimusPrime.Listeners
 
                 if (matchList.Count > 0)
                 {
-                    return string.Join("|", matchList.ToArray());
+                    return string.Join("\n", matchList.ToArray());
                 }
 
-                return "-";
+                return "Nothing...";
             }
             catch (Exception)
             {
-                return "-";
+                return "Nothing...";
             }
         }
     }
