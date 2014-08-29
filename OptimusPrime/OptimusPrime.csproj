@@ -46,8 +46,9 @@
       <HintPath>C:\Users\Emil\Documents\Interop.SKYPE4COMLib.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Parse">
       <HintPath>..\packages\parse.1.2.6\lib\net45\Parse.dll</HintPath>
@@ -55,10 +56,14 @@
     <Reference Include="Parse.NetFx45">
       <HintPath>..\packages\parse.1.2.6\lib\net45\Parse.NetFx45.dll</HintPath>
     </Reference>
+    <Reference Include="PostenAPI">
+      <HintPath>External\PostenAPI.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -68,16 +73,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\GameOn.cs" />
+    <Compile Include="Domain\Message.cs" />
     <Compile Include="Domain\Quote.cs" />
     <Compile Include="Domain\Status.cs" />
     <Compile Include="Enums\StatusCode.cs" />
     <Compile Include="Helpers\SkypeHelper.cs" />
     <Compile Include="Interfaces\IListener.cs" />
+    <Compile Include="Listeners\KolliListener.cs" />
+    <Compile Include="Listeners\LaEmpanadaListener.cs" />
+    <Compile Include="Listeners\MffListener.cs" />
     <Compile Include="Listeners\NordiskFilmListener.cs" />
     <Compile Include="Listeners\RandomListener.cs" />
     <Compile Include="Listeners\SportListener.cs" />
     <Compile Include="Listeners\GameOnListener.cs" />
     <Compile Include="Listeners\QuoteListener.cs" />
+    <Compile Include="Listeners\StringListener.cs" />
+    <Compile Include="Listeners\PreListener.cs" />
     <Compile Include="Listeners\TorrentListener.cs" />
     <Compile Include="Listeners\WebListener.cs" />
     <Compile Include="Listeners\ZoltanListener.cs" />

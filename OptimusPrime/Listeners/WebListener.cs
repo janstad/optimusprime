@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 using OptimusPrime.Helpers;
 using OptimusPrime.Interfaces;
 using SKYPE4COMLib;
@@ -14,6 +15,8 @@ namespace OptimusPrime.Listeners
 {
     public class WebListener : IListener
     {
+        private const string cOmdbUrl = "http://www.omdbapi.com/?i=";
+
         public string Call(string pCommand, ChatMessage pMsg)
         {
             var urls = Regex.Match(pCommand, @"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+");
@@ -22,65 +25,56 @@ namespace OptimusPrime.Listeners
             if (urls.Groups.Count == 1 && urls.Groups[0].Value == string.Empty) return string.Empty;
 
             var url = urls.Groups[0].Value;
-            var host = GetHostName(url);
+            var uri = new Uri(url);
+            var host = uri.Host.Replace("www.", "");
 
             switch (host.ToUpper().Trim())
             {
                 case "IMDB.COM":
-                    return GetImdbString(url);
+                    return GetImdbString(uri);
                 //case "OPEN.SPOTIFY.COM":
-                //    return GetSpotifyString(url);
+                //    return GetSpotifyString(uri);
             }
 
             return GetUrlTitle(url);
         }
 
-        private string GetHostName(string pUrl)
+        private string GetSpotifyString(Uri pUrl)
         {
-            var uri = new Uri(pUrl);
-            return uri.Host.Replace("www.", "");
-        }
-
-        private string GetSpotifyString(string pUrl)
-        {
-
-
-
+            
             return string.Empty;
         }
 
-        private string GetImdbString(string pUrl)
+        private string GetImdbString(Uri pUri)
         {
-            var title = GetUrlTitle(pUrl);
-            var rating = GetImdbRating(pUrl);
-
-            return string.Format(@"{0}|\n{1}", title, rating);
-        }
-
-        private string GetImdbRating(string pUrl)
-        {
-            try
+            using (var wc = new WebClient())
             {
-                HtmlDocument doc;
-                using (var wc = new WebClient())
+                var stream = wc.OpenRead(cOmdbUrl + (pUri.Segments[pUri.Segments.Length - 1]).Replace("/", ""));
+                var sr = new StreamReader(stream);
+
+                var json = JsonConvert.DeserializeObject<dynamic>(sr.ReadToEnd());
+
+                if (json["Response"] == "False")
                 {
-                    doc = new HtmlDocument();
-                    doc.Load(wc.OpenRead(pUrl), true);
+                    return string.Empty;
                 }
 
-                var metaTag = doc.DocumentNode.SelectSingleNode("//div[@class='star-box-details']");
+                var title = json["Title"];
+                var year = json["Year"];
+                var runtime = json["Runtime"];
+                var genre = json["Genre"];
+                var rating = json["imdbRating"];
+                var votes = json["imdbVotes"];
+                var actors = json["Actors"];
 
-
-                if (metaTag != null)
-                {
-                    var vResult = metaTag.InnerText.Substring(0, metaTag.InnerText.IndexOf("users", StringComparison.Ordinal) + "users".Length);
-                    return Regex.Replace(vResult, @"\s+", " ");
-                }
-                return string.Empty;
-            }
-            catch (Exception)
-            {
-                return string.Empty;
+                return string.Format("{0} ({1}) {2} - {3}/10 ({4} votes)\n{5}\n{6}",
+                                     title,
+                                     year,
+                                     runtime,
+                                     rating,
+                                     votes,
+                                     genre,
+                                     actors);
             }
         }
 

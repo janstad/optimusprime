@@ -24,5 +24,13 @@ namespace OptimusPrime.Shared
             }
             return string.Empty;
         }
+
+        public static string TrimFull(this string pInput)
+        {
+            var vArr = pInput.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x));
+            var vOutput = string.Join(" ", vArr);
+
+            return vOutput;
+        }
     }
 }

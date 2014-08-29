@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OptimusPrime.Listeners;
 using SKYPE4COMLib;
 using OptimusPrime.Interfaces;
+using System.Timers;
 
 namespace OptimusPrime.Helpers
 {
@@ -15,6 +16,7 @@ namespace OptimusPrime.Helpers
         private const string cTrigger = "!"; //Say !command
         private List<IListener> mListeners;
         private const string cBotPrefix = "/me";
+        private Timer mTimer;
 
         public void Initialize()
         {
@@ -31,8 +33,18 @@ namespace OptimusPrime.Helpers
                     new SportListener(),
                     new NordiskFilmListener(),
                     new WebListener(),
-                    new RandomListener()
+                    new RandomListener(),
+                    new LaEmpanadaListener(),
+                    new StringListener(),
+                    new MffListener(),
+                    new KolliListener(),
+                    new PreListener()
                 };
+
+            //Create timer for pre
+            mTimer = new Timer() { Interval = 1800000  };
+            mTimer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
+            mTimer.Start();
         }
 
         private void AttachSkype()
@@ -50,8 +62,10 @@ namespace OptimusPrime.Helpers
         private void skype_MessageStatus(ChatMessage pMsg, TChatMessageStatus pStatus)
         {
             if (!IsValidMessageStatus(pStatus)) return;
-
+            
             WriteConsoleMessage(pMsg);
+
+            if (!IsValidSender(pMsg.FromDisplayName)) return;
 
             var command = pMsg.Body;
             var returnMessage = string.Empty;
@@ -73,13 +87,19 @@ namespace OptimusPrime.Helpers
             return status == TChatMessageStatus.cmsReceived || status == TChatMessageStatus.cmsSent;
         }
 
+        private bool IsValidSender(string pSender)
+        {
+            return pSender != "BOT";
+        }
+
+
         private void SendMessage(string pReturnMessage, ChatMessage pMsg)
         {
             var message = string.Format("{0} {1}", cBotPrefix, pReturnMessage); // Add prefix
-            message = message.Replace("|\\n", "\n");
 
-            if (pReturnMessage.Contains("\n")) //message is multi line
+            if (pReturnMessage.Contains("|\\n")) //message is multi line
             {
+                message = message.Replace("|\\n", "\n");
                 mSkype.SendMessage(pMsg.Sender.Handle, message); //send pm
             }
             else
@@ -97,10 +117,20 @@ namespace OptimusPrime.Helpers
                 Console.ResetColor();
                 chat = "MF";
             }
-            else if(pMsg.Chat.Name.Contains("$flippid;f742f5ee5cbe0c71"))
+            else if (pMsg.Chat.Name.Contains("$flippid;f742f5ee5cbe0c71"))
             {
                 Console.ForegroundColor = ConsoleColor.White;
                 chat = "GR";
+            }
+            else if (pMsg.Chat.Name.Contains("ed20b9c00e34dd8b"))
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                chat = "GR+";
+            }
+            else if (pMsg.Chat.Name.Contains("19:f87666a242fc410a8b2ad4630dd2161e"))
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                chat = "NiP";
             }
             else
             {
@@ -112,10 +142,19 @@ namespace OptimusPrime.Helpers
                 "{0} <{1}><{2}> {3}",
                 pMsg.Timestamp.ToString("HH:mm:ss"),
                 chat,
-                pMsg.FromDisplayName, 
+                pMsg.FromDisplayName,
                 pMsg.Body);
 
             Console.WriteLine(line);
+        }
+
+        private void timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            var preListener = (PreListener)mListeners.Last();
+            var pre = preListener.GetPre();
+
+            if (!string.IsNullOrEmpty(pre))
+            mSkype.SendMessage("emil.janstad", pre);
         }
     }
 }

@@ -32,7 +32,16 @@ namespace OptimusPrime.Listeners
         private string GetRandom(string[] pCommands)
         {
             var vRnd = new Random();
-            return pCommands[vRnd.Next(1, pCommands.Length)];
+            if (pCommands.Length > 1)
+            {
+                return pCommands[vRnd.Next(1, pCommands.Length)];
+            }
+            
+            if(pCommands.Length == 1 && pCommands[0] != string.Empty)
+            {
+                return pCommands[0];
+            }
+            return "Not enought arguments...";
         }
     }
 }

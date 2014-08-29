@@ -93,13 +93,14 @@ namespace OptimusPrime.Listeners
 
                 }
                 Array.Sort(arrNodes); //Sort A-Z
-                return String.Join("\n", arrNodes);
+                return String.Join("|\\n", arrNodes);
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Console.WriteLine("Error getting TorrentLeech info");
-                return string.Empty;
+                var errMessage = String.Format("Error: {0}", e.Message);
+                Console.WriteLine(errMessage);
+                return errMessage;
             }
 
         }

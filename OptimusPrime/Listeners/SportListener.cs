@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using HtmlAgilityPack;
 using OptimusPrime.Interfaces;
 using OptimusPrime.Shared;
@@ -24,26 +26,35 @@ namespace OptimusPrime.Listeners
                 return string.Empty;
             }
 
-            switch (pCommand.CommandTrimToUpper())
+            var commands = pCommand.Split('+');
+            var plusDays = 0;
+
+            if (commands.Length > 1 && int.TryParse(commands[1], out plusDays))
+            {
+                if (plusDays > 6) plusDays = 0;
+            }
+            
+
+            switch (commands[0].CommandTrimToUpper())
             {
                 case "FOTBOLL":
-                    return GetGames("Fotboll");
+                    return GetGames("Fotboll", plusDays);
                 case "HOCKEY":
-                    return GetGames("Ishockey");
+                    return GetGames("Ishockey", plusDays);
                 case "TENNIS":
-                    return GetGames("Tennis");
+                    return GetGames("Tennis", plusDays);
                 case "SPEEDWAY":
-                    return GetGames("Speedway");
+                    return GetGames("Speedway", plusDays);
                 case "BASKET":
-                    return GetGames("Basket");
+                    return GetGames("Basket", plusDays);
                 case "AMFOTBOLL":
-                    return GetGames("Amerikansk fotboll");
+                    return GetGames("Amerikansk fotboll", plusDays);
                 case "HANDBOLL":
-                    return GetGames("Handboll");
+                    return GetGames("Handboll", plusDays);
                 case "F1":
-                    return GetGames("Formel 1");
+                    return GetGames("Formel 1", plusDays);
                 case "GOLF":
-                    return GetGames("Golf");
+                    return GetGames("Golf", plusDays);
                 default:
                     return string.Empty;
             }
@@ -51,67 +62,69 @@ namespace OptimusPrime.Listeners
 
 
 
-        private string GetGames(string pSport)
+        private string GetGames(string pSport, int pPlusDays)
         {
             try
             {
+                var matchList = new List<string>();
                 var wc = new WebClient();
                 var doc = new HtmlDocument();
+
                 doc.Load(wc.OpenRead("http://www.tvmatchen.nu"), Encoding.UTF8);
 
-                var metaTags = doc.DocumentNode.SelectNodes("//div[@class='match-info clearfix']");
-                var matchList = new List<string>();
+                var days = doc.DocumentNode.SelectNodes("//ul[@class='match-list']");
+                var today = days[pPlusDays];
+                var todaysMatches = today.SelectNodes("li");
 
-                foreach (var node in metaTags)
+                foreach (var matchNode in todaysMatches)
                 {
+                    var match = matchNode.SelectSingleNode("div[@class='match-info clearfix']");
 
-                    var matches = Regex.Matches(node.InnerHtml, "title=\"(.*?)\">");
-                    var sport = matches[0].Groups[1].ToString();
+                    if (match == null) continue;
 
-                    //Code for TV-channel
-                    var vChannel = matches[1].Groups[1].ToString();
-                    if (matches.Count > 2)
-                        vChannel = vChannel + "/" + matches[2].Groups[1];
+                    var sport = match.SelectSingleNode("div[@class='sport']").InnerText;
 
-                    matches = Regex.Matches(node.InnerHtml, "content=\"(.*?)T");
-                    var date = matches[0].Groups[1].ToString();
-                    if (DateTime.Parse(date) != DateTime.Now.Date)
-                        if (DateTime.Parse(date) != DateTime.Now.Date.AddDays(1))
-                            break;
-
-
-                    if (sport.Equals(pSport))
+                    if (sport != pSport)
                     {
-                        matches = Regex.Matches(node.InnerHtml, "\"field-content\">(.*?)</span>");
-                        var gameName = matches[1].Groups[1].ToString();
+                        continue;
+                    }
 
-                        matches = Regex.Matches(node.InnerHtml, "([0-9][0-9]:[0-5][0-9])</span>");
-                        var time = matches[0].Groups[1].ToString();
+                    var vTime = match.SelectSingleNode("div[@class='time']").InnerText;
 
-                        if (DateTime.Parse(date) == DateTime.Now.Date || DateTime.Parse(date) == DateTime.Now.Date.AddDays(1) &&
-                            DateTime.Parse(time).TimeOfDay < DateTime.Parse("05:00").TimeOfDay)
+                    var vMatchName = match.SelectSingleNode("h3[@class='match-name']").InnerText;
+                    var vLeagueNode = match.SelectSingleNode("div[@class='league']");
+                    var vLeagueName = vLeagueNode.FirstChild.InnerText.Replace("\n", "").Trim();
+
+                    if (string.IsNullOrEmpty(vLeagueName))
+                    {
+                        vLeagueName = vLeagueNode.InnerText.Replace("\n", "").TrimFull();
+                    }
+
+                    var channels = match.SelectSingleNode("div[@class='channel']");
+                    var vChannelName = string.Empty;
+
+                    foreach (var child in channels.ChildNodes)
+                    {
+                        if (child.Name == "img")
                         {
-                            matches = Regex.Matches(node.InnerHtml, "class=\"league\">\\n(.*?)<");
-
-                            var league = matches[0].Groups[1].ToString().Trim();
-
-                            if (string.IsNullOrEmpty(league))
-                            {
-                                matches = Regex.Matches(node.InnerHtml, @"class=""field-content"">(.*?)<");
-
-                                if (matches.Count != 0)
-                                    league = matches[3].Groups[1].ToString();
-                            }
-
-                            var full = time + ": " + gameName + " (" + league + ") - " + vChannel;
-                            matchList.Add(full);
+                            if (!string.IsNullOrEmpty(vChannelName)) vChannelName += "/";
+                            vChannelName += child.GetAttributeValue("title", string.Empty);
                         }
                     }
+
+                    var full = string.Format("{0}: {1} ({2}) - {3}",
+                                    vTime,
+                                    vMatchName,
+                                    vLeagueName,
+                                    vChannelName);
+                    matchList.Add(full);
                 }
 
                 if (matchList.Count > 0)
                 {
-                    return string.Join("\n", matchList.ToArray());
+                    matchList.Insert(0, string.Format("----- {0} -----", 
+                        DateTime.Today.AddDays(pPlusDays).DayOfWeek.ToString()));
+                    return string.Join("|\\n", matchList.ToArray());
                 }
 
                 return "Nothing...";

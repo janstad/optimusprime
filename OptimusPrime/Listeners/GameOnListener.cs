@@ -29,6 +29,15 @@ namespace OptimusPrime.Listeners
             }
             else
             {
+                if (IsUserAlreadyAdded(pMsg.FromDisplayName))
+                {
+                    CleanGameList();
+                    var gameOn = mGameOnList.Find(x => x.Name == pMsg.FromDisplayName);
+                    if (gameOn != null)
+                    {
+                        gameOn.ValidUntil = DateTime.Now.AddMinutes(20);
+                    }
+                }
                 return string.Empty; 
             }
 
@@ -52,18 +61,25 @@ namespace OptimusPrime.Listeners
 
         private async void GetGameOnList()
         {
-            //TODO: Try/Catch
-            var query = ParseObject.GetQuery("GameOn");
-            var results = await query.FindAsync();
-
-            foreach (var result in results)
+            try
             {
-                var gameOn = new GameOn()
+                var query = ParseObject.GetQuery("GameOn");
+                var results = await query.FindAsync();
+
+                foreach (var result in results)
                 {
-                    Name = result.Get<string>("Name"),
-                    ValidUntil = result.Get<DateTime>("ValidUntil")
-                };
-                mGameOnList.Add(gameOn);
+                    var gameOn = new GameOn()
+                    {
+                        Name = result.Get<string>("Name"),
+                        ValidUntil = result.Get<DateTime>("ValidUntil")
+                    };
+                    mGameOnList.Add(gameOn);
+                }
+            }
+            catch (Exception e)
+            {
+                
+                throw;
             }
         }
 
@@ -71,14 +87,14 @@ namespace OptimusPrime.Listeners
         {
             if (IsUserAlreadyAdded(pUsername))
             {
-                mGameOnList.Find(x => x.Name == pUsername).ValidUntil = DateTime.Now.AddHours(1);
-                return "Player was already added. Prolonged registration.";
+                mGameOnList.Find(x => x.Name == pUsername).ValidUntil = DateTime.Now.AddMinutes(20);
+                return "Player was already added.";
             }
 
             var newGameOn = new GameOn()
             {
                 Name = pUsername,
-                ValidUntil = DateTime.Now.AddHours(1)
+                ValidUntil = DateTime.Now.AddMinutes(20)
             };
             mGameOnList.Add(newGameOn);
             AddUserToOnlineDb(pUsername);
@@ -105,14 +121,24 @@ namespace OptimusPrime.Listeners
         {
             var count = 0;
             var sb = new StringBuilder();
-            sb.Append(string.Format("Ready for game ({0}): ", mGameOnList.Count));
+            sb.Append(string.Format("Ready for game [{0}]: ", mGameOnList.Count));
 
             foreach (GameOn gameOn in mGameOnList)
             {
+
+                var minutes = gameOn.ValidUntil.Subtract(DateTime.Now).Minutes;
+                var seconds = gameOn.ValidUntil.Subtract(DateTime.Now).Subtract(new TimeSpan(minutes)).Seconds;
+
+                if (minutes == 20 && seconds == 59)
+                {
+                    seconds = 0;
+                }
+
                 sb.Append(string.Format(
-                    "{0} ({1})",
+                    "{0} [{1}:{2}]",
                     gameOn.Name,
-                    gameOn.ValidUntil.Subtract(DateTime.Now).Minutes + 1));
+                    minutes,
+                    seconds.ToString("00")));
 
                 if (count < mGameOnList.Count - 1)
                 {
@@ -120,6 +146,13 @@ namespace OptimusPrime.Listeners
                 }
                 count++;
             }
+
+            if (mGameOnList.Count >= 5)
+            {
+                sb.Append("\n");
+                sb.Append("--- FULL TEAM. JOIN TS AND SERVER NOW. ---");
+            }
+
             return sb.ToString();
         }
 
@@ -160,7 +193,7 @@ namespace OptimusPrime.Listeners
             //TODO: Try/Catch
             var parseObject = new ParseObject("GameOn");
             parseObject["Name"] = pUsername;
-            parseObject["ValidUntil"] = DateTime.Now.AddHours(1);
+            parseObject["ValidUntil"] = DateTime.Now.AddMinutes(20);
 
             await parseObject.SaveAsync();
         }

@@ -14,10 +14,12 @@ namespace OptimusPrime.Listeners
     public class QuoteListener : IListener
     {
         private List<Quote> mQuoteList;
+        private List<Quote> mFullQuoteList;
 
         public QuoteListener()
         {
             mQuoteList = new List<Quote>();
+            mFullQuoteList = new List<Quote>();
             GetQuoteList();
         }
 
@@ -48,6 +50,11 @@ namespace OptimusPrime.Listeners
             var returnString = string.Empty;
 
             //Get username and quote from pCommand
+            if (command.IndexOf(":", StringComparison.Ordinal) == -1)
+            {
+                return "Unable to save. Could not find username...";
+            }
+            
             var username = command.Substring(0, command.IndexOf(":", StringComparison.Ordinal));
             var quote = command.Substring(
                 command.IndexOf(":", StringComparison.Ordinal) + 1).Trim();
@@ -60,6 +67,7 @@ namespace OptimusPrime.Listeners
 
             //Add new quote to list so that it will be included right away
             mQuoteList.Add(newQuote);
+            mFullQuoteList.Add(newQuote);
 
             //TODO: Fulfix?
             var sendStatus = new Status();
@@ -113,8 +121,9 @@ namespace OptimusPrime.Listeners
             if (commandList.Length > 1) //Search variable included?
             {
                 var quotes =
-                    (from st in mQuoteList
+                    (from st in mFullQuoteList
                      where st.UserQuote.ToLower().Contains(commandList[1].ToLower())
+                     || st.Username.ToLower().Contains(commandList[1].ToLower())
                      select st).ToArray();
                 if (quotes.Length == 0) return "No quotes found";
 
@@ -122,8 +131,8 @@ namespace OptimusPrime.Listeners
                 returnQuote = string.Format("{0}: {1}", quote.Username, quote.UserQuote);
 
                 //Remove quote to avoid same quote posting over and over
-                mQuoteList.RemoveAt(
-                    mQuoteList.FindIndex(x => x.UserQuote.Trim() == quote.UserQuote.Trim()));
+                //mQuoteList.RemoveAt(
+                //    mQuoteList.FindIndex(x => x.UserQuote.Trim() == quote.UserQuote.Trim()));
 
                 return returnQuote;
             }
@@ -153,6 +162,7 @@ namespace OptimusPrime.Listeners
                         UserQuote = result.Get<string>("Quote")
                     };
                 mQuoteList.Add(leQuote);
+                mFullQuoteList.Add(leQuote);
             }
         }
     }
