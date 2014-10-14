@@ -68,13 +68,13 @@ namespace OptimusPrime.Listeners
                 var actors = json["Actors"];
 
                 return string.Format("{0} ({1}) {2} - {3}/10 ({4} votes)\n{5}\n{6}",
-                                     title,
-                                     year,
-                                     runtime,
-                                     rating,
-                                     votes,
-                                     genre,
-                                     actors);
+                                     title, //0
+                                     year, //1
+                                     runtime, //2
+                                     rating, //3
+                                     votes, //4
+                                     genre, //5
+                                     actors); //6
             }
         }
 
