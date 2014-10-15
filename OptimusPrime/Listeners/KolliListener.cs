@@ -58,7 +58,7 @@ namespace OptimusPrime.Listeners
                 sb.Append(status.Date.ToString("yyyy-MM-dd hh:mm"));
                 sb.Append(" - ");
                 sb.Append(status.Status);
-                sb.Append("|\\n");
+                sb.Append(OpConstants.NewLineChar);
             }
 
          return sb.ToString();

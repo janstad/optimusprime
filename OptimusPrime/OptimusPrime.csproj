@@ -59,6 +59,10 @@
     <Reference Include="PostenAPI">
       <HintPath>External\PostenAPI.dll</HintPath>
     </Reference>
+    <Reference Include="SKYPE4COMLib">
+      <HintPath>External\SKYPE4COMLib.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -100,6 +104,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Shared\ExtensionMethods.cs" />
+    <Compile Include="Shared\OpConstants.cs" />
     <Compile Include="Specifications\CommandSpec.cs" />
   </ItemGroup>
   <ItemGroup>

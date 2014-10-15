@@ -117,8 +117,8 @@ namespace OptimusPrime.Listeners
 
                 if (matchList.Count <= 0) return "Nothing...";
                 matchList.Insert(0, string.Format("----- {0} -----", 
-                    DateTime.Today.AddDays(pPlusDays).DayOfWeek.ToString()));
-                return string.Join("|\\n", matchList.ToArray());
+                    DateTime.Today.AddDays(pPlusDays).DayOfWeek));
+                return string.Join(OpConstants.NewLineChar, matchList.ToArray());
             }
             catch (Exception)
             {

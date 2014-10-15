@@ -61,7 +61,7 @@ namespace OptimusPrime.Listeners
 
                 var vDist = vMs2.Count > 0 ? vMs2[0].Groups[1].ToString() : "N/A";
 
-                vReturnString = "Title: " + vTitle + "|\\nDistributor: " + vDist;
+                vReturnString = "Title: " + vTitle + OpConstants.NewLineChar + "Distributor: " + vDist;
             }
             else
             {
