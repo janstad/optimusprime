@@ -60,7 +60,7 @@ namespace OptimusPrime.Listeners
             tickets = tickets.Replace("&nbsp;", " ").Trim();
 
 
-            return string.Format("Nästa hemmamatch: {0} |\\n{1} - {2}", game, date, tickets);
+            return string.Format("Nästa hemmamatch: {0} {1}{2} - {3}", game, OpConstants.NewLineChar, date, tickets);
         }
 
 

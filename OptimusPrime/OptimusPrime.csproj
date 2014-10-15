@@ -42,10 +42,6 @@
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\packages\HtmlAgilityPack.1.4.6\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
-    <Reference Include="Interop.SKYPE4COMLib">
-      <HintPath>C:\Users\Emil\Documents\Interop.SKYPE4COMLib.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -58,6 +54,10 @@
     </Reference>
     <Reference Include="PostenAPI">
       <HintPath>External\PostenAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="SKYPE4COMLib">
+      <HintPath>External\SKYPE4COMLib.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -100,6 +100,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Shared\ExtensionMethods.cs" />
+    <Compile Include="Shared\OpConstants.cs" />
     <Compile Include="Specifications\CommandSpec.cs" />
   </ItemGroup>
   <ItemGroup>

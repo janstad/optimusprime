@@ -124,7 +124,7 @@ namespace OptimusPrime.Listeners
                 {
                     matchList.Insert(0, string.Format("----- {0} -----", 
                         DateTime.Today.AddDays(pPlusDays).DayOfWeek.ToString()));
-                    return string.Join("|\\n", matchList.ToArray());
+                    return string.Join(OpConstants.NewLineChar, matchList.ToArray());
                 }
 
                 return "Nothing...";

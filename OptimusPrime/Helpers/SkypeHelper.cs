@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OptimusPrime.Listeners;
+using OptimusPrime.Shared;
 using SKYPE4COMLib;
 using OptimusPrime.Interfaces;
 using System.Timers;
@@ -13,7 +14,6 @@ namespace OptimusPrime.Helpers
     public class SkypeHelper
     {
         private Skype mSkype;
-        private const string cTrigger = "!"; //Say !command
         private List<IListener> mListeners;
         private const string cBotPrefix = "/me";
         private Timer mTimer;
@@ -97,9 +97,9 @@ namespace OptimusPrime.Helpers
         {
             var message = string.Format("{0} {1}", cBotPrefix, pReturnMessage); // Add prefix
 
-            if (pReturnMessage.Contains("|\\n")) //message is multi line
+            if (pReturnMessage.Contains(OpConstants.NewLineChar)) //message is multi line
             {
-                message = message.Replace("|\\n", "\n");
+                message = message.Replace(OpConstants.NewLineChar, "\n");
                 mSkype.SendMessage(pMsg.Sender.Handle, message); //send pm
             }
             else
