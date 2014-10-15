@@ -13,11 +13,11 @@ namespace OptimusPrime.Listeners
 {
     public class GameOnListener : IListener
     {
-        private List<GameOn> mGameOnList;
+        private readonly List<GameOn> _mGameOnList;
 
         public GameOnListener()
         {
-            mGameOnList = new List<GameOn>();
+            _mGameOnList = new List<GameOn>();
             GetGameOnList();
         }
 
@@ -32,7 +32,7 @@ namespace OptimusPrime.Listeners
                 if (IsUserAlreadyAdded(pMsg.FromDisplayName))
                 {
                     CleanGameList();
-                    var gameOn = mGameOnList.Find(x => x.Name == pMsg.FromDisplayName);
+                    var gameOn = _mGameOnList.Find(x => x.Name == pMsg.FromDisplayName);
                     if (gameOn != null)
                     {
                         gameOn.ValidUntil = DateTime.Now.AddMinutes(20);
@@ -73,7 +73,7 @@ namespace OptimusPrime.Listeners
                         Name = result.Get<string>("Name"),
                         ValidUntil = result.Get<DateTime>("ValidUntil")
                     };
-                    mGameOnList.Add(gameOn);
+                    _mGameOnList.Add(gameOn);
                 }
             }
             catch (Exception e)
@@ -87,7 +87,7 @@ namespace OptimusPrime.Listeners
         {
             if (IsUserAlreadyAdded(pUsername))
             {
-                mGameOnList.Find(x => x.Name == pUsername).ValidUntil = DateTime.Now.AddMinutes(20);
+                _mGameOnList.Find(x => x.Name == pUsername).ValidUntil = DateTime.Now.AddMinutes(20);
                 return "Player was already added.";
             }
 
@@ -96,7 +96,7 @@ namespace OptimusPrime.Listeners
                 Name = pUsername,
                 ValidUntil = DateTime.Now.AddMinutes(20)
             };
-            mGameOnList.Add(newGameOn);
+            _mGameOnList.Add(newGameOn);
             AddUserToOnlineDb(pUsername);
 
             var returnString = string.Format("Player successfully added.\n{0}", GetGameOn());
@@ -106,24 +106,21 @@ namespace OptimusPrime.Listeners
 
         private string SetGameOff(string pUsername)
         {
-            if (IsUserAlreadyAdded(pUsername))
-            {
-                var index = mGameOnList.FindIndex(x => x.Name == pUsername);
-                mGameOnList.RemoveAt(index);
-                RemoveUserFromOnlineDb(pUsername);
-                var returnString = string.Format("Player successfully removed.\n{0}", GetGameOn());
-                return returnString;
-            }
-            return "Player not found in list. Nothing to remove.";
+            if (!IsUserAlreadyAdded(pUsername)) return "Player not found in list. Nothing to remove.";
+            var index = _mGameOnList.FindIndex(x => x.Name == pUsername);
+            _mGameOnList.RemoveAt(index);
+            RemoveUserFromOnlineDb(pUsername);
+            var returnString = string.Format("Player successfully removed.\n{0}", GetGameOn());
+            return returnString;
         }
 
         private string GetGameOn()
         {
             var count = 0;
             var sb = new StringBuilder();
-            sb.Append(string.Format("Ready for game [{0}]: ", mGameOnList.Count));
+            sb.Append(string.Format("Ready for game [{0}]: ", _mGameOnList.Count));
 
-            foreach (GameOn gameOn in mGameOnList)
+            foreach (var gameOn in _mGameOnList)
             {
 
                 var minutes = gameOn.ValidUntil.Subtract(DateTime.Now).Minutes;
@@ -140,40 +137,37 @@ namespace OptimusPrime.Listeners
                     minutes,
                     seconds.ToString("00")));
 
-                if (count < mGameOnList.Count - 1)
+                if (count < _mGameOnList.Count - 1)
                 {
                     sb.Append(", ");
                 }
                 count++;
             }
 
-            if (mGameOnList.Count >= 5)
-            {
-                sb.Append("\n");
-                sb.Append("--- FULL TEAM. JOIN TS AND SERVER NOW. ---");
-            }
-
+            if (_mGameOnList.Count < 5) return sb.ToString();
+            sb.Append("\n");
+            sb.Append("--- FULL TEAM. JOIN TS AND SERVER NOW. ---");
             return sb.ToString();
         }
 
         private bool IsUserAlreadyAdded(string pUsername)
         {
-            return mGameOnList.Find(x => x.Name == pUsername) != null;
+            return _mGameOnList.Find(x => x.Name == pUsername) != null;
         }
 
         private void CleanGameList()
         {
-            for (int i = mGameOnList.Count - 1; i >= 0; i--)
+            for (var i = _mGameOnList.Count - 1; i >= 0; i--)
             {
-                if (mGameOnList.ElementAt(i).ValidUntil < DateTime.Now)
+                if (_mGameOnList.ElementAt(i).ValidUntil < DateTime.Now)
                 {
-                    RemoveUserFromOnlineDb(mGameOnList[i].Name);
-                    mGameOnList.RemoveAt(i);
+                    RemoveUserFromOnlineDb(_mGameOnList[i].Name);
+                    _mGameOnList.RemoveAt(i);
                 }
             }
         }
 
-        private async void RemoveUserFromOnlineDb(string pUsername)
+        private static async void RemoveUserFromOnlineDb(string pUsername)
         {
             //TODO: Try/Catch.
             var query = from player in ParseObject.GetQuery("GameOn")
@@ -188,7 +182,7 @@ namespace OptimusPrime.Listeners
             }
         }
 
-        private async void AddUserToOnlineDb(string pUsername)
+        private static async void AddUserToOnlineDb(string pUsername)
         {
             //TODO: Try/Catch
             var parseObject = new ParseObject("GameOn");

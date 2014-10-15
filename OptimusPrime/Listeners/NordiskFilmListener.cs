@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
@@ -32,7 +31,7 @@ namespace OptimusPrime.Listeners
             }
         }
 
-        private string GetDistributor(string pSearchParam)
+        private static string GetDistributor(string pSearchParam)
         {
             var vUrl = "http://www.discshop.se/search.php?q=" + pSearchParam.Replace(" ", "+");
             var vWc = new WebClient();

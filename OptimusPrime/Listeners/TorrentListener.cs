@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
@@ -33,7 +34,7 @@ namespace OptimusPrime.Listeners
         }
 
 
-        private string GetTlRss(string[] pFilter)
+        private static string GetTlRss(ICollection<string> pFilter)
         {
             try
             {
@@ -66,18 +67,9 @@ namespace OptimusPrime.Listeners
 
                 foreach (XmlNode xn in nodes)
                 {
-                    if (pFilter.Length > 0)
+                    if (pFilter.Count > 0)
                     {
-                        var match = true;
-                        foreach (var str in pFilter)
-                        {
-                          
-                                if (!xn["title"].InnerText.ToLower().Contains(str.ToLower()))
-                                {
-                                    match = false;
-                                    break;
-                                }
-                        }
+                        var match = pFilter.All(str => xn["title"].InnerText.ToLower().Contains(str.ToLower()));
                         if (match)
                         {
                             arrNodes[count] = xn["title"].InnerText;

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OptimusPrime.Listeners;
 using SKYPE4COMLib;
 using OptimusPrime.Interfaces;
@@ -12,11 +10,11 @@ namespace OptimusPrime.Helpers
 {
     public class SkypeHelper
     {
-        private Skype mSkype;
-        private const string cTrigger = "!"; //Say !command
-        private List<IListener> mListeners;
-        private const string cBotPrefix = "/me";
-        private Timer mTimer;
+        private Skype _mSkype;
+        private const string CTrigger = "!"; //Say !command
+        private List<IListener> _mListeners;
+        private const string CBotPrefix = "/me";
+        private Timer _mTimer;
 
         public void Initialize()
         {
@@ -24,7 +22,7 @@ namespace OptimusPrime.Helpers
             AttachSkype();
 
             //Initialize listeners
-            mListeners = new List<IListener>()
+            _mListeners = new List<IListener>()
                 {
                     new ZoltanListener(),
                     new TorrentListener(),
@@ -42,21 +40,21 @@ namespace OptimusPrime.Helpers
                 };
 
             //Create timer for pre
-            mTimer = new Timer() { Interval = 1800000  };
-            mTimer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
-            mTimer.Start();
+            _mTimer = new Timer() { Interval = 1800000  };
+            _mTimer.Elapsed += timer_Elapsed;
+            _mTimer.Start();
         }
 
         private void AttachSkype()
         {
-            if (mSkype != null) return;
+            if (_mSkype != null) return;
 
-            mSkype = new Skype();
+            _mSkype = new Skype();
             //Use mSkype protocol version 7 
-            mSkype.Attach(7, false);
+            _mSkype.Attach(7, false);
 
             //Listen 
-            mSkype.MessageStatus += skype_MessageStatus;
+            _mSkype.MessageStatus += skype_MessageStatus;
         }
 
         private void skype_MessageStatus(ChatMessage pMsg, TChatMessageStatus pStatus)
@@ -70,7 +68,7 @@ namespace OptimusPrime.Helpers
             var command = pMsg.Body;
             var returnMessage = string.Empty;
 
-            foreach (var listener in mListeners)
+            foreach (var listener in _mListeners)
             {
                 returnMessage = listener.Call(command, pMsg);
 
@@ -82,25 +80,25 @@ namespace OptimusPrime.Helpers
             SendMessage(returnMessage, pMsg);
         }
 
-        private bool IsValidMessageStatus(TChatMessageStatus status)
+        private static bool IsValidMessageStatus(TChatMessageStatus status)
         {
             return status == TChatMessageStatus.cmsReceived || status == TChatMessageStatus.cmsSent;
         }
 
-        private bool IsValidSender(string pSender)
+        private static bool IsValidSender(string pSender)
         {
             return pSender != "BOT";
         }
 
 
-        private void SendMessage(string pReturnMessage, ChatMessage pMsg)
+        private void SendMessage(string pReturnMessage, IChatMessage pMsg)
         {
-            var message = string.Format("{0} {1}", cBotPrefix, pReturnMessage); // Add prefix
+            var message = string.Format("{0} {1}", CBotPrefix, pReturnMessage); // Add prefix
 
             if (pReturnMessage.Contains("|\\n")) //message is multi line
             {
                 message = message.Replace("|\\n", "\n");
-                mSkype.SendMessage(pMsg.Sender.Handle, message); //send pm
+                _mSkype.SendMessage(pMsg.Sender.Handle, message); //send pm
             }
             else
             {
@@ -108,9 +106,9 @@ namespace OptimusPrime.Helpers
             }
         }
 
-        private void WriteConsoleMessage(ChatMessage pMsg)
+        private static void WriteConsoleMessage(IChatMessage pMsg)
         {
-            var chat = string.Empty;
+            string chat;
 
             if (pMsg.Chat.Name.Contains("$63bb4364f4abbd9"))
             {
@@ -150,11 +148,11 @@ namespace OptimusPrime.Helpers
 
         private void timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            var preListener = (PreListener)mListeners.Last();
+            var preListener = (PreListener)_mListeners.Last();
             var pre = preListener.GetPre();
 
             if (!string.IsNullOrEmpty(pre))
-            mSkype.SendMessage("emil.janstad", pre);
+            _mSkype.SendMessage("emil.janstad", pre);
         }
     }
 }

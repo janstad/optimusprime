@@ -1,13 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Xml;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
-using OptimusPrime.Helpers;
 using OptimusPrime.Interfaces;
 using SKYPE4COMLib;
 
@@ -15,7 +12,7 @@ namespace OptimusPrime.Listeners
 {
     public class WebListener : IListener
     {
-        private const string cOmdbUrl = "http://www.omdbapi.com/?i=";
+        private const string COmdbUrl = "http://www.omdbapi.com/?i=";
 
         public string Call(string pCommand, ChatMessage pMsg)
         {
@@ -39,17 +36,11 @@ namespace OptimusPrime.Listeners
             return GetUrlTitle(url);
         }
 
-        private string GetSpotifyString(Uri pUrl)
-        {
-            
-            return string.Empty;
-        }
-
-        private string GetImdbString(Uri pUri)
+        private static string GetImdbString(Uri pUri)
         {
             using (var wc = new WebClient())
             {
-                var stream = wc.OpenRead(cOmdbUrl + (pUri.Segments[pUri.Segments.Length - 1]).Replace("/", ""));
+                var stream = wc.OpenRead(COmdbUrl + (pUri.Segments[pUri.Segments.Length - 1]).Replace("/", ""));
                 var sr = new StreamReader(stream);
 
                 var json = JsonConvert.DeserializeObject<dynamic>(sr.ReadToEnd());
@@ -78,7 +69,7 @@ namespace OptimusPrime.Listeners
             }
         }
 
-        private string GetUrlTitle(string pUrl)
+        private static string GetUrlTitle(string pUrl)
         {
             try
             {

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using HtmlAgilityPack;
 using OptimusPrime.Interfaces;
 using OptimusPrime.Shared;
@@ -62,7 +60,7 @@ namespace OptimusPrime.Listeners
 
 
 
-        private string GetGames(string pSport, int pPlusDays)
+        private static string GetGames(string pSport, int pPlusDays)
         {
             try
             {
@@ -103,13 +101,10 @@ namespace OptimusPrime.Listeners
                     var channels = match.SelectSingleNode("div[@class='channel']");
                     var vChannelName = string.Empty;
 
-                    foreach (var child in channels.ChildNodes)
+                    foreach (var child in channels.ChildNodes.Where(child => child.Name == "img"))
                     {
-                        if (child.Name == "img")
-                        {
-                            if (!string.IsNullOrEmpty(vChannelName)) vChannelName += "/";
-                            vChannelName += child.GetAttributeValue("title", string.Empty);
-                        }
+                        if (!string.IsNullOrEmpty(vChannelName)) vChannelName += "/";
+                        vChannelName += child.GetAttributeValue("title", string.Empty);
                     }
 
                     var full = string.Format("{0}: {1} ({2}) - {3}",
@@ -120,14 +115,10 @@ namespace OptimusPrime.Listeners
                     matchList.Add(full);
                 }
 
-                if (matchList.Count > 0)
-                {
-                    matchList.Insert(0, string.Format("----- {0} -----", 
-                        DateTime.Today.AddDays(pPlusDays).DayOfWeek.ToString()));
-                    return string.Join("|\\n", matchList.ToArray());
-                }
-
-                return "Nothing...";
+                if (matchList.Count <= 0) return "Nothing...";
+                matchList.Insert(0, string.Format("----- {0} -----", 
+                    DateTime.Today.AddDays(pPlusDays).DayOfWeek.ToString()));
+                return string.Join("|\\n", matchList.ToArray());
             }
             catch (Exception)
             {

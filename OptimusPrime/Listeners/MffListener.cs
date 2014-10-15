@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using OptimusPrime.Interfaces;
 using OptimusPrime.Shared;
 using OptimusPrime.Specifications;
@@ -34,7 +30,7 @@ namespace OptimusPrime.Listeners
             }
         }
 
-        private string GetNextMatchInfo()
+        private static string GetNextMatchInfo()
         {
             var wc = new WebClient();
             var doc = new HtmlDocument();

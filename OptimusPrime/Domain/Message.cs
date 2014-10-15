@@ -4,10 +4,5 @@
     {
         public string ReturnMessage { get; set; }
         public bool IsPrivateMessage { get; set; }
-
-        public Message()
-        {
-            
-        }
     }
 }

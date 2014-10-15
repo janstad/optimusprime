@@ -39,9 +39,8 @@ namespace OptimusPrime.Listeners
             }
         }
 
-        private string GetKolliInfo(string pKolli)
+        private static string GetKolliInfo(string pKolli)
         {
-            var kolli = string.Empty;
             var kolliArray = pKolli.Split(' ');
             
             if (kolliArray.Length <= 1)
@@ -49,7 +48,7 @@ namespace OptimusPrime.Listeners
                 return string.Empty;
             }
 
-            kolli = pKolli.RemoveCommand();
+            var kolli = pKolli.RemoveCommand();
 
             var statusList = PostenAPI.Posten.GetDeliveryStatuses(kolli);
             var sb = new StringBuilder();

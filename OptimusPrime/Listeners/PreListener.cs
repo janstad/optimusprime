@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Xml;
 using OptimusPrime.Interfaces;
 using OptimusPrime.Shared;
@@ -15,13 +14,13 @@ namespace OptimusPrime.Listeners
     public class PreListener : IListener
     {
 
-        private Dictionary<string, string> mPreDictionary;
-        private Dictionary<string, string> mNewPreDictionary;
+        private readonly Dictionary<string, string> _mPreDictionary;
+        private readonly Dictionary<string, string> _mNewPreDictionary;
 
         public PreListener()
         {
-            mPreDictionary = new Dictionary<string, string>();
-            mNewPreDictionary = new Dictionary<string, string>();
+            _mPreDictionary = new Dictionary<string, string>();
+            _mNewPreDictionary = new Dictionary<string, string>();
 
             GetPreList();
         }
@@ -55,31 +54,31 @@ namespace OptimusPrime.Listeners
         {
             GetPreRss();
 
-            var preArray = mNewPreDictionary.Select(x => x.Value).ToArray();
+            var preArray = _mNewPreDictionary.Select(x => x.Value).ToArray();
             return string.Join("\n", preArray);
         }
 
         private void GetPreRss()
         {
-            mNewPreDictionary.Clear();
-            var url = "http://predb.me/?cats=movies-hd&rss=1";
+            _mNewPreDictionary.Clear();
+            const string url = "http://predb.me/?cats=movies-hd&rss=1";
             var reader = XmlReader.Create(url);
             var feed = SyndicationFeed.Load(reader);
 
             reader.Close();
 
-            foreach (SyndicationItem item in feed.Items)
+            foreach (var item in feed.Items)
             {
                 var id = item.Id;
                 var title = item.Title.Text;
 
-                if (!mPreDictionary.ContainsKey(id))
+                if (!_mPreDictionary.ContainsKey(id))
                 {
-                    mPreDictionary.Add(id, title);
+                    _mPreDictionary.Add(id, title);
 
-                    if (!mNewPreDictionary.ContainsKey(id))
+                    if (!_mNewPreDictionary.ContainsKey(id))
                     {
-                        mNewPreDictionary.Add(id, title);
+                        _mNewPreDictionary.Add(id, title);
                         SaveData(id, title);
                     }
                 }
@@ -94,18 +93,18 @@ namespace OptimusPrime.Listeners
 
             foreach (var result in results)
             {
-                var Id = result.Get<string>("Id");
-                var Title = result.Get<string>("Title");
+                var id = result.Get<string>("Id");
+                var title = result.Get<string>("Title");
 
-                if (!mPreDictionary.ContainsKey(Id))
+                if (!_mPreDictionary.ContainsKey(id))
                 {
-                    mPreDictionary.Add(Id, Title);
+                    _mPreDictionary.Add(id, title);
                 }
 
             }
         }
 
-        private async void SaveData(string pId, string pTitle)
+        private static async void SaveData(string pId, string pTitle)
         {
             //Create ParseObject for saving in DB
             var parseObject = new ParseObject("PreDB");

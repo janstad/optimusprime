@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OptimusPrime.Interfaces;
+﻿using OptimusPrime.Interfaces;
 using OptimusPrime.Shared;
 using OptimusPrime.Specifications;
 using SKYPE4COMLib;
@@ -12,7 +7,7 @@ namespace OptimusPrime.Listeners
 {
  public   class StringListener : IListener
      {
-      const string cTeamSpeak = "Mother Flankers TeamSpeak 3 server!\nip: maddah.se\npw: buchannon\nhttp://www.teamspeak.com/?page=downloads";
+      const string CTeamSpeak = "Mother Flankers TeamSpeak 3 server!\nip: maddah.se\npw: buchannon\nhttp://www.teamspeak.com/?page=downloads";
 
       public string Call(string pCommand, ChatMessage pMsg)
       {
@@ -28,7 +23,7 @@ namespace OptimusPrime.Listeners
           switch (pCommand.CommandTrimToUpper())
           {
               case "TS":
-                  return cTeamSpeak;
+                  return CTeamSpeak;
               default:
                   return string.Empty;
           }

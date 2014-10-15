@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using OptimusPrime.Interfaces;
 using OptimusPrime.Shared;
 using OptimusPrime.Specifications;
@@ -29,15 +30,15 @@ namespace OptimusPrime.Listeners
             }
         }
 
-        private string GetRandom(string[] pCommands)
+        private static string GetRandom(IList<string> pCommands)
         {
             var vRnd = new Random();
-            if (pCommands.Length > 1)
+            if (pCommands.Count > 1)
             {
-                return pCommands[vRnd.Next(1, pCommands.Length)];
+                return pCommands[vRnd.Next(1, pCommands.Count)];
             }
             
-            if(pCommands.Length == 1 && pCommands[0] != string.Empty)
+            if(pCommands.Count == 1 && pCommands[0] != string.Empty)
             {
                 return pCommands[0];
             }

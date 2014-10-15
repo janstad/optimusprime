@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using HtmlAgilityPack;
 using OptimusPrime.Interfaces;
 using OptimusPrime.Shared;
 using OptimusPrime.Specifications;
@@ -16,9 +10,6 @@ namespace OptimusPrime.Listeners
 {
     public class LaEmpanadaListener : IListener
     {
-        private const string URL = "http://graph.facebook.com/211608792207500";
-        private const string DATA = @"{""object"":{""likes"":""Name""}}";
-
         public string Call(string pCommand, ChatMessage pMsg)
         {
             if (new CommandSpec().IsSatisfiedBy(pCommand)) //Command?
@@ -41,7 +32,7 @@ namespace OptimusPrime.Listeners
 
         public string GetLikes()
         {
-            var likes = string.Empty;
+            string likes;
 
             using (var wc = new WebClient())
             {
