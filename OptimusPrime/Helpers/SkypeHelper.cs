@@ -35,14 +35,8 @@ namespace OptimusPrime.Helpers
                     new LaEmpanadaListener(),
                     new StringListener(),
                     new MffListener(),
-                    new KolliListener(),
-                    new PreListener()
+                    new KolliListener()
                 };
-
-            //Create timer for pre
-            _mTimer = new Timer() { Interval = 1800000  };
-            _mTimer.Elapsed += timer_Elapsed;
-            _mTimer.Start();
         }
 
         private void AttachSkype()
@@ -144,15 +138,6 @@ namespace OptimusPrime.Helpers
                 pMsg.Body);
 
             Console.WriteLine(line);
-        }
-
-        private void timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            var preListener = (PreListener)_mListeners.Last();
-            var pre = preListener.GetPre();
-
-            if (!string.IsNullOrEmpty(pre))
-            _mSkype.SendMessage("emil.janstad", pre);
         }
     }
 }
