@@ -35,14 +35,21 @@ namespace OptimusPrime
             Console.Title = "OptimusPrime Auto-Bot";
             Console.ResetColor();
 
-            var isRunning = true;
-            while (isRunning)
+            try
             {
-                var input = Console.ReadLine();
-                if (input.ToUpper().Equals("QUIT"))
+                var isRunning = true;
+                while (isRunning)
                 {
-                    isRunning = false;
+                    var input = Console.ReadLine();
+                    if (input.ToUpper().Equals("QUIT"))
+                    {
+                        isRunning = false;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
             }
         }
     }
