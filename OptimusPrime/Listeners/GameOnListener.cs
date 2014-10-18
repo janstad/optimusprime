@@ -61,25 +61,17 @@ namespace OptimusPrime.Listeners
 
         private async void GetGameOnList()
         {
-            try
-            {
-                var query = ParseObject.GetQuery("GameOn");
-                var results = await query.FindAsync();
+            var query = ParseObject.GetQuery("GameOn");
+            var results = await query.FindAsync();
 
-                foreach (var result in results)
-                {
-                    var gameOn = new GameOn()
-                    {
-                        Name = result.Get<string>("Name"),
-                        ValidUntil = result.Get<DateTime>("ValidUntil")
-                    };
-                    _mGameOnList.Add(gameOn);
-                }
-            }
-            catch (Exception e)
+            foreach (var result in results)
             {
-                
-                throw;
+                var gameOn = new GameOn()
+                {
+                    Name = result.Get<string>("Name"),
+                    ValidUntil = result.Get<DateTime>("ValidUntil")
+                };
+                _mGameOnList.Add(gameOn);
             }
         }
 
