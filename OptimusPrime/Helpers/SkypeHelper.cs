@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Timers;
 using OptimusPrime.Listeners;
 using OptimusPrime.Interfaces;
 using OptimusPrime.Shared;
@@ -14,7 +12,6 @@ namespace OptimusPrime.Helpers
         private Skype _mSkype;
         private List<IListener> _mListeners;
         private const string CBotPrefix = "/me";
-        private Timer _mTimer;
 
         public void Initialize()
         {
