@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Web;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
+using OptimusPrime.Helpers;
 using OptimusPrime.Interfaces;
 using SKYPE4COMLib;
 
@@ -16,24 +18,20 @@ namespace OptimusPrime.Listeners
 
         public string Call(string pCommand, ChatMessage pMsg)
         {
-            var urls = Regex.Match(pCommand, @"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+");
-
-            if (urls.Groups.Count == 0) return string.Empty;
-            if (urls.Groups.Count == 1 && urls.Groups[0].Value == string.Empty) return string.Empty;
-
-            var url = urls.Groups[0].Value;
-            var uri = new Uri(url);
-            var host = uri.Host.Replace("www.", "");
-
-            switch (host.ToUpper().Trim())
+            var urlInfo = new List<string>();
+            foreach (var uri in new HttpHelper().ExtractUris(pCommand))
             {
-                case "IMDB.COM":
-                    return GetImdbString(uri);
-                //case "OPEN.SPOTIFY.COM":
-                //    return GetSpotifyString(uri);
+                switch (uri.Host.ToLower())
+                {
+                    case "imdb.com":
+                        urlInfo.Add(GetImdbString(uri));
+                        break;
+                    default:
+                        urlInfo.Add(GetUrlTitle(uri.AbsoluteUri));
+                        break;
+                }
             }
-
-            return GetUrlTitle(url);
+            return string.Join("\n", urlInfo);
         }
 
         private static string GetImdbString(Uri pUri)

@@ -77,6 +77,7 @@
     <Compile Include="Domain\Quote.cs" />
     <Compile Include="Domain\Status.cs" />
     <Compile Include="Enums\StatusCode.cs" />
+    <Compile Include="Helpers\HttpHelper.cs" />
     <Compile Include="Helpers\SkypeHelper.cs" />
     <Compile Include="Interfaces\IListener.cs" />
     <Compile Include="Listeners\KolliListener.cs" />
