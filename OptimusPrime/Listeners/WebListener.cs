@@ -1,15 +1,15 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using Newtonsoft.Json;
+using OptimusPrime.Helpers;
+using OptimusPrime.Interfaces;
+using SKYPE4COMLib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
-using HtmlAgilityPack;
-using Newtonsoft.Json;
-using OptimusPrime.Helpers;
-using OptimusPrime.Interfaces;
-using SKYPE4COMLib;
 
 namespace OptimusPrime.Listeners
 {
@@ -17,6 +17,7 @@ namespace OptimusPrime.Listeners
     {
         // TODO: Move constant strings to config files
         private const string COmdbUrl = "http://www.omdbapi.com/?i=";
+
         private const string UserAgent =
             "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36";
 
@@ -33,14 +34,16 @@ namespace OptimusPrime.Listeners
                     case "imdb.com":
                         urlInfo.Add(GetImdbString(uri));
                         break;
+
                     case "imgur.com":
                         urlInfo.Add(GetUrlTitle(
                             uri.AbsoluteUri
-                            .Replace(".jpg", string.Empty)
-                            .Replace(".gif", string.Empty)
-                            .Replace(".png", string.Empty)
+                                .Replace(".jpg", string.Empty)
+                                .Replace(".gif", string.Empty)
+                                .Replace(".png", string.Empty)
                             ));
                         break;
+
                     default:
                         urlInfo.Add(GetUrlTitle(uri.AbsoluteUri));
                         break;
@@ -72,13 +75,13 @@ namespace OptimusPrime.Listeners
                 var actors = json["Actors"];
 
                 return string.Format("{0} ({1}) {2} - {3}/10 ({4} votes)\n{5}\n{6}",
-                                     title, //0
-                                     year, //1
-                                     runtime, //2
-                                     rating, //3
-                                     votes, //4
-                                     genre, //5
-                                     actors); //6
+                    title, //0
+                    year, //1
+                    runtime, //2
+                    rating, //3
+                    votes, //4
+                    genre, //5
+                    actors); //6
             }
         }
 
@@ -86,9 +89,9 @@ namespace OptimusPrime.Listeners
         {
             try
             {
-                var request = (HttpWebRequest) WebRequest.Create(pUrl);
+                var request = (HttpWebRequest)WebRequest.Create(pUrl);
                 request.UserAgent = UserAgent;
-                var response = (HttpWebResponse) request.GetResponse();
+                var response = (HttpWebResponse)request.GetResponse();
                 using (var stream = response.GetResponseStream())
                 {
                     var doc = new HtmlDocument();
@@ -101,9 +104,7 @@ namespace OptimusPrime.Listeners
                         doc.Load(stream, true);
                     }
                     var titleNode = doc.DocumentNode.SelectSingleNode("//title");
-                    if (titleNode == null) return string.Empty;
-                    var title = HttpUtility.HtmlDecode(titleNode.InnerText);
-                    return title.Replace("\n", "");
+                    return titleNode == null ? string.Empty : HttpUtility.HtmlDecode(titleNode.InnerText).Replace("\n", "");
                 }
             }
             catch (Exception e)
