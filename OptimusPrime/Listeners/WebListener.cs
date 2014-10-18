@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Web;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
@@ -80,25 +81,29 @@ namespace OptimusPrime.Listeners
         {
             try
             {
-                HtmlDocument doc;
-                using (var wc = new WebClient())
+                var request = (HttpWebRequest) WebRequest.Create(pUrl);
+                request.UserAgent = UserAgent;
+                var response = (HttpWebResponse) request.GetResponse();
+                using (var stream = response.GetResponseStream())
                 {
-                    wc.Headers.Add("user-agent", UserAgent);
-                    doc = new HtmlDocument();
-                    doc.Load(wc.OpenRead(pUrl), true);
+                    var doc = new HtmlDocument();
+                    if (response.CharacterSet != null)
+                    {
+                        doc.Load(stream, Encoding.GetEncoding(response.CharacterSet), true);
+                    }
+                    else
+                    {
+                        doc.Load(stream, true);
+                    }
+                    var titleNode = doc.DocumentNode.SelectSingleNode("//title");
+                    if (titleNode == null) return string.Empty;
+                    var title = HttpUtility.HtmlDecode(titleNode.InnerText);
+                    return title.Replace("\n", "");
                 }
-
-                var titleNode = doc.DocumentNode.SelectSingleNode("//title");
-
-                if (titleNode == null) return string.Empty;
-                var title = HttpUtility.HtmlDecode(titleNode.InnerText);
-
-                if (title.Contains("\n")) title = title.Replace("\n", "");
-
-                return title;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.Error.WriteLine(e);
                 return string.Empty;
             }
         }
