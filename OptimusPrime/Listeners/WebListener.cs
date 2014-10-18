@@ -29,6 +29,9 @@ namespace OptimusPrime.Listeners
                     case "imdb.com":
                         urlInfo.Add(GetImdbString(uri));
                         break;
+                    case "imgur.com":
+                        urlInfo.Add(GetUrlTitle(uri.AbsoluteUri.Replace(".jpg", string.Empty)));
+                        break;
                     default:
                         urlInfo.Add(GetUrlTitle(uri.AbsoluteUri));
                         break;
