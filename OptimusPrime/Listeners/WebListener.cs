@@ -19,7 +19,10 @@ namespace OptimusPrime.Listeners
         public string Call(string pCommand, ChatMessage pMsg)
         {
             var urlInfo = new List<string>();
-            foreach (var uri in new HttpHelper().ExtractUris(pCommand))
+            var uris = new HttpHelper().ExtractUris(pCommand).ToList();
+            if (uris.Count() > 3)
+                return "I refuse to process more than three URLs at a time.";
+            foreach (var uri in uris)
             {
                 switch (uri.Host.ToLower())
                 {
