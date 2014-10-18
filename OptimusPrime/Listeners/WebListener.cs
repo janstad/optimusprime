@@ -14,7 +14,10 @@ namespace OptimusPrime.Listeners
 {
     public class WebListener : IListener
     {
+        // TODO: Move constant strings to config files
         private const string COmdbUrl = "http://www.omdbapi.com/?i=";
+        private const string UserAgent =
+            "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36";
 
         public string Call(string pCommand, ChatMessage pMsg)
         {
@@ -80,6 +83,7 @@ namespace OptimusPrime.Listeners
                 HtmlDocument doc;
                 using (var wc = new WebClient())
                 {
+                    wc.Headers.Add("user-agent", UserAgent);
                     doc = new HtmlDocument();
                     doc.Load(wc.OpenRead(pUrl), true);
                 }
