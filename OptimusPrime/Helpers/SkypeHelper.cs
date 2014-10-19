@@ -139,18 +139,14 @@ namespace OptimusPrime.Helpers
             if (!IsValidSender(pMsg.FromDisplayName)) return;
 
             var command = pMsg.Body;
-            var returnMessage = string.Empty;
 
             foreach (var listener in _mListeners)
             {
-                returnMessage = listener.Call(command, pMsg);
-
-                if (!string.IsNullOrEmpty(returnMessage)) break; //We have a match
+                var returnMessage = listener.Call(command, pMsg);
+                if (string.IsNullOrEmpty(returnMessage)) continue;
+                SendMessage(returnMessage, pMsg);
+                return;
             }
-
-            if (string.IsNullOrEmpty(returnMessage)) return;
-
-            SendMessage(returnMessage, pMsg);
         }
     }
 }
