@@ -39,6 +39,9 @@
     <ApplicationIcon>Resources\Autobots.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\packages\HtmlAgilityPack.1.4.6\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
@@ -72,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleWriter.cs" />
     <Compile Include="Domain\GameOn.cs" />
     <Compile Include="Domain\Message.cs" />
     <Compile Include="Domain\Quote.cs" />
@@ -80,6 +84,7 @@
     <Compile Include="Helpers\HttpHelper.cs" />
     <Compile Include="Helpers\SkypeHelper.cs" />
     <Compile Include="Interfaces\IListener.cs" />
+    <Compile Include="IOutputWriter.cs" />
     <Compile Include="Listeners\KolliListener.cs" />
     <Compile Include="Listeners\LaEmpanadaListener.cs" />
     <Compile Include="Listeners\MffListener.cs" />

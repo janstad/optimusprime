@@ -1,8 +1,9 @@
-﻿using System;
-using System.Configuration;
-using System.Text;
+﻿using Autofac;
 using OptimusPrime.Helpers;
 using Parse;
+using System;
+using System.Configuration;
+using System.Text;
 
 namespace OptimusPrime
 {
@@ -18,22 +19,12 @@ namespace OptimusPrime
             ParseClient.Initialize(appId, winKey);
             ParseAnalytics.TrackAppOpenedAsync();
 
-            var skypeHelper = new SkypeHelper();
+            var builder = new ContainerBuilder();
+            builder.RegisterType<ConsoleWriter>().As<IOutputWriter>();
+            var container = builder.Build();
+
+            var skypeHelper = new SkypeHelper(container.Resolve<IOutputWriter>());
             skypeHelper.Initialize();
-
-            var sb = new StringBuilder();
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            sb.Append("++++++++++++++++++++++++++++++++++++++++");
-            sb.Append(Environment.NewLine);
-            sb.Append("+++++ OPTIMUS PRIME SKYPE BOT v1.0 +++++");
-            sb.Append(Environment.NewLine);
-            sb.Append("++++++++++++++++++++++++++++++++++++++++");
-            sb.Append(Environment.NewLine);
-
-            Console.WriteLine(sb.ToString());
-            Console.Title = "OptimusPrime Auto-Bot";
-            Console.ResetColor();
 
             try
             {

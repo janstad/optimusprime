@@ -1,17 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using OptimusPrime.Interfaces;
 using OptimusPrime.Listeners;
-using OptimusPrime.Interfaces;
 using OptimusPrime.Shared;
 using SKYPE4COMLib;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace OptimusPrime.Helpers
 {
     public class SkypeHelper
     {
-        private Skype _mSkype;
-        private List<IListener> _mListeners;
         private const string CBotPrefix = "/me";
+        private readonly IOutputWriter _outputWriter;
+        private List<IListener> _mListeners;
+        private Skype _mSkype;
+
+        public SkypeHelper(IOutputWriter outputWriter)
+        {
+            _outputWriter = outputWriter;
+        }
 
         public void Initialize()
         {
@@ -34,41 +41,16 @@ namespace OptimusPrime.Helpers
                     new MffListener(),
                     new KolliListener()
                 };
-        }
 
-        private void AttachSkype()
-        {
-            if (_mSkype != null) return;
-
-            _mSkype = new Skype();
-            //Use mSkype protocol version 7 
-            _mSkype.Attach(7, false);
-
-            //Listen 
-            _mSkype.MessageStatus += skype_MessageStatus;
-        }
-
-        private void skype_MessageStatus(ChatMessage pMsg, TChatMessageStatus pStatus)
-        {
-            if (!IsValidMessageStatus(pStatus)) return;
-            
-            WriteConsoleMessage(pMsg);
-
-            if (!IsValidSender(pMsg.FromDisplayName)) return;
-
-            var command = pMsg.Body;
-            var returnMessage = string.Empty;
-
-            foreach (var listener in _mListeners)
-            {
-                returnMessage = listener.Call(command, pMsg);
-
-                if (!string.IsNullOrEmpty(returnMessage)) break; //We have a match
-            }
-
-            if (string.IsNullOrEmpty(returnMessage)) return;
-
-            SendMessage(returnMessage, pMsg);
+            Console.Title = @"OptimusPrime Auto-Bot";
+            var sb = new StringBuilder();
+            sb.Append("++++++++++++++++++++++++++++++++++++++++");
+            sb.Append(Environment.NewLine);
+            sb.Append("+++++ OPTIMUS PRIME SKYPE BOT v1.0 +++++");
+            sb.Append(Environment.NewLine);
+            sb.Append("++++++++++++++++++++++++++++++++++++++++");
+            sb.Append(Environment.NewLine);
+            _outputWriter.WriteLine(ConsoleColor.Green, sb.ToString());
         }
 
         private static bool IsValidMessageStatus(TChatMessageStatus status)
@@ -79,22 +61,6 @@ namespace OptimusPrime.Helpers
         private static bool IsValidSender(string pSender)
         {
             return pSender != "BOT";
-        }
-
-
-        private void SendMessage(string pReturnMessage, IChatMessage pMsg)
-        {
-            var message = string.Format("{0} {1}", CBotPrefix, pReturnMessage); // Add prefix
-
-            if (pReturnMessage.Contains(OpConstants.NewLineChar)) //message is multi line
-            {
-                message = message.Replace(OpConstants.NewLineChar, "\n");
-                _mSkype.SendMessage(pMsg.Sender.Handle, message); //send pm
-            }
-            else
-            {
-                pMsg.Chat.SendMessage(message); //send to chat
-            }
         }
 
         private static void WriteConsoleMessage(IChatMessage pMsg)
@@ -135,6 +101,56 @@ namespace OptimusPrime.Helpers
                 pMsg.Body);
 
             Console.WriteLine(line);
+        }
+
+        private void AttachSkype()
+        {
+            if (_mSkype != null) return;
+
+            _mSkype = new Skype();
+            //Use mSkype protocol version 7
+            _mSkype.Attach(7, false);
+
+            //Listen
+            _mSkype.MessageStatus += skype_MessageStatus;
+        }
+
+        private void SendMessage(string pReturnMessage, IChatMessage pMsg)
+        {
+            var message = string.Format("{0} {1}", CBotPrefix, pReturnMessage); // Add prefix
+
+            if (pReturnMessage.Contains(OpConstants.NewLineChar)) //message is multi line
+            {
+                message = message.Replace(OpConstants.NewLineChar, "\n");
+                _mSkype.SendMessage(pMsg.Sender.Handle, message); //send pm
+            }
+            else
+            {
+                pMsg.Chat.SendMessage(message); //send to chat
+            }
+        }
+
+        private void skype_MessageStatus(ChatMessage pMsg, TChatMessageStatus pStatus)
+        {
+            if (!IsValidMessageStatus(pStatus)) return;
+
+            WriteConsoleMessage(pMsg);
+
+            if (!IsValidSender(pMsg.FromDisplayName)) return;
+
+            var command = pMsg.Body;
+            var returnMessage = string.Empty;
+
+            foreach (var listener in _mListeners)
+            {
+                returnMessage = listener.Call(command, pMsg);
+
+                if (!string.IsNullOrEmpty(returnMessage)) break; //We have a match
+            }
+
+            if (string.IsNullOrEmpty(returnMessage)) return;
+
+            SendMessage(returnMessage, pMsg);
         }
     }
 }
