@@ -6,5 +6,7 @@ namespace OptimusPrime.Helpers
     public interface IHttpHelper
     {
         IEnumerable<Uri> ExtractUris(string message);
+
+        string GetTitleFromUrl(Uri uri);
     }
 }
