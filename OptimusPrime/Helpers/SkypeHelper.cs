@@ -11,36 +11,22 @@ namespace OptimusPrime.Helpers
     public class SkypeHelper
     {
         private const string CBotPrefix = "/me";
+        private readonly IEnumerable<IListener> _mListeners;
         private readonly IOutputWriter _outputWriter;
-        private List<IListener> _mListeners;
         private Skype _mSkype;
 
-        public SkypeHelper(IOutputWriter outputWriter)
+        public SkypeHelper(
+            IOutputWriter outputWriter,
+            IEnumerable<IListener> mListeners)
         {
             _outputWriter = outputWriter;
+            _mListeners = mListeners;
         }
 
         public void Initialize()
         {
             //Register with skype
             AttachSkype();
-
-            //Initialize listeners
-            _mListeners = new List<IListener>()
-                {
-                    new ZoltanListener(),
-                    new TorrentListener(),
-                    new QuoteListener(),
-                    new GameOnListener(),
-                    new SportListener(),
-                    new NordiskFilmListener(),
-                    new WebListener(),
-                    new RandomListener(),
-                    new LaEmpanadaListener(),
-                    new StringListener(),
-                    new MffListener(),
-                    new KolliListener()
-                };
 
             Console.Title = @"OptimusPrime Auto-Bot";
             var sb = new StringBuilder();
