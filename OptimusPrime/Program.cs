@@ -6,7 +6,6 @@ using Parse;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Text;
 
 namespace OptimusPrime
 {
@@ -47,14 +46,10 @@ namespace OptimusPrime
 
             try
             {
-                var isRunning = true;
-                while (isRunning)
+                var input = string.Empty;
+                while (!input.ToUpper().Equals("QUIT"))
                 {
-                    var input = Console.ReadLine();
-                    if (input.ToUpper().Equals("QUIT"))
-                    {
-                        isRunning = false;
-                    }
+                    input = Console.ReadLine() ?? string.Empty;
                 }
             }
             catch (Exception e)
