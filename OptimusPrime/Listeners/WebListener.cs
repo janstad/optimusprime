@@ -21,10 +21,17 @@ namespace OptimusPrime.Listeners
         private const string UserAgent =
             "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36";
 
+        private readonly IHttpHelper _httpHelper;
+
+        public WebListener(IHttpHelper httpHelper)
+        {
+            _httpHelper = httpHelper;
+        }
+
         public string Call(string pCommand, ChatMessage pMsg)
         {
             var urlInfo = new List<string>();
-            var uris = new HttpHelper().ExtractUris(pCommand).ToList();
+            var uris = _httpHelper.ExtractUris(pCommand).ToList();
             if (uris.Count() > 3)
                 return "I refuse to process more than three URLs at a time.";
             foreach (var uri in uris)

@@ -23,6 +23,7 @@ namespace OptimusPrime
 
             var builder = new ContainerBuilder();
             builder.RegisterType<ConsoleWriter>().As<IOutputWriter>().SingleInstance();
+            builder.RegisterType<HttpHelper>().As<IHttpHelper>().SingleInstance();
 
             builder.RegisterType<ZoltanListener>().As<IListener>();
             builder.RegisterType<TorrentListener>().As<IListener>().PreserveExistingDefaults();
