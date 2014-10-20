@@ -120,6 +120,7 @@
     </Compile>
     <Compile Include="Shared\ExtensionMethods.cs" />
     <Compile Include="Shared\OpConstants.cs" />
+    <Compile Include="Specifications\AdminSpec.cs" />
     <Compile Include="Specifications\CommandSpec.cs" />
   </ItemGroup>
   <ItemGroup>
