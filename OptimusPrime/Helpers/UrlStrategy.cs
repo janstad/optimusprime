@@ -4,7 +4,12 @@ namespace OptimusPrime.Helpers
 {
     public abstract class UrlStrategy : IUrlStrategy
     {
-        public Uri Uri { get; set; }
+        internal Uri Uri;
+
+        protected UrlStrategy(Uri uri)
+        {
+            Uri = uri;
+        }
 
         public abstract string ExtractInformationFromUrl();
     }

@@ -6,21 +6,22 @@ namespace OptimusPrime.Helpers
     {
         private readonly IHttpHelper _httpHelper;
 
-        public UrlStrategyImgur(IHttpHelper httpHelper)
+        public UrlStrategyImgur(Uri uri, IHttpHelper httpHelper)
+            : base(new Uri(
+                uri.AbsoluteUri
+                    .Replace("i.imgur.com", "imgur.com")
+                    .Replace(".jpg", string.Empty)
+                    .Replace(".jpeg", string.Empty)
+                    .Replace(".gif", string.Empty)
+                    .Replace(".png", string.Empty)
+                ))
         {
             _httpHelper = httpHelper;
         }
 
         public override string ExtractInformationFromUrl()
         {
-            return _httpHelper.GetTitleFromUrl(
-                new Uri(
-                    Uri.AbsoluteUri
-                    .Replace(".jpg", string.Empty)
-                    .Replace(".jpeg", string.Empty)
-                    .Replace(".gif", string.Empty)
-                    .Replace(".png", string.Empty)
-                    ));
+            return _httpHelper.GetTitleFromUrl(Uri);
         }
     }
 }

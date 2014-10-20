@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.Net;
 
@@ -7,6 +8,11 @@ namespace OptimusPrime.Helpers
     public class UrlStrategyImdb : UrlStrategy
     {
         private const string COmdbUrl = "http://www.omdbapi.com/?i=";
+
+        public UrlStrategyImdb(Uri uri)
+            : base(uri)
+        {
+        }
 
         public override string ExtractInformationFromUrl()
         {

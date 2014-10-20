@@ -1,10 +1,13 @@
-﻿namespace OptimusPrime.Helpers
+﻿using System;
+
+namespace OptimusPrime.Helpers
 {
     public class UrlStrategyDefault : UrlStrategy
     {
         private readonly IHttpHelper _httpHelper;
 
-        public UrlStrategyDefault(IHttpHelper httpHelper)
+        public UrlStrategyDefault(Uri uri, IHttpHelper httpHelper)
+            : base(uri)
         {
             _httpHelper = httpHelper;
         }

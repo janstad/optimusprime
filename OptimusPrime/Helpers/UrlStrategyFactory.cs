@@ -16,19 +16,13 @@ namespace OptimusPrime.Helpers
             switch (uri.Host.ToLower().Replace("www.", string.Empty))
             {
                 case "imdb.com":
-                    return new UrlStrategyImdb { Uri = uri };
+                    return new UrlStrategyImdb(uri);
 
                 case "i.imgur.com":
                 case "imgur.com":
-                    return new UrlStrategyImgur(_httpHelper)
-                    {
-                        Uri = new Uri(
-                            uri.AbsoluteUri.Replace(
-                                "i.imgur.com",
-                                "imgur.com"))
-                    };
+                    return new UrlStrategyImgur(uri, _httpHelper);
             }
-            return new UrlStrategyDefault(_httpHelper) { Uri = uri };
+            return new UrlStrategyDefault(uri, _httpHelper);
         }
     }
 }
