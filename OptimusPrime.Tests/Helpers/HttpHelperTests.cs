@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using OptimusPrime.Helpers;
+using System;
 using System.Linq;
 
 namespace OptimusPrime.Tests.Helpers
@@ -18,6 +19,15 @@ namespace OptimusPrime.Tests.Helpers
         {
             var uris = _target.ExtractUris(message);
             Assert.AreEqual(nbrUrls, uris.Count());
+        }
+
+        // TODO: Add tests for character encoding problems
+        // TODO: Add tests for titles that contain html-encoded strings
+        [TestCase("http://www.google.com", "Google")]
+        public void GetTitleFromUrl_ShouldExtractTitle(string url, string title)
+        {
+            var result = _target.GetTitleFromUrl(new Uri(url));
+            Assert.True(result.StartsWith(title));
         }
 
         [SetUp]
