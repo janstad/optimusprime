@@ -1,0 +1,2 @@
+git update-index --assume-unchanged [fileName]
+git update-index --no-assume-unchanged [fileName]
