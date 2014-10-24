@@ -23,6 +23,7 @@ namespace OptimusPrime.Tests.Helpers
 
         // TODO: Add tests for character encoding problems
         // TODO: Add tests for titles that contain html-encoded strings
+        // TODO: Don't use external resources for test
         [TestCase("http://www.google.com", "Google")]
         public void GetTitleFromUrl_ShouldExtractTitle(string url, string title)
         {
