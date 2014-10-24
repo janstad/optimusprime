@@ -21,6 +21,10 @@ namespace OptimusPrime.Helpers
                 case "i.imgur.com":
                 case "imgur.com":
                     return new UrlStrategyImgur(uri, _httpHelper);
+
+                case "youtube.com":
+                case "youtu.be":
+                    return new UrlStrategyYoutube(uri, _httpHelper);
             }
             return new UrlStrategyDefault(uri, _httpHelper);
         }

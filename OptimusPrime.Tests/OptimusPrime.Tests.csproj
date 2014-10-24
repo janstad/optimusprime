@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Helpers\HttpHelperTests.cs" />
     <Compile Include="Helpers\UrlStrategyImgurTests.cs" />
+    <Compile Include="Helpers\UrlStrategyYoutubeTests.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

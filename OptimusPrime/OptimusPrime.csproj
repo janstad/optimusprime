@@ -97,6 +97,7 @@
     <Compile Include="Helpers\UrlStrategyFactory.cs" />
     <Compile Include="Helpers\UrlStrategyImdb.cs" />
     <Compile Include="Helpers\UrlStrategyImgur.cs" />
+    <Compile Include="Helpers\UrlStrategyYoutube.cs" />
     <Compile Include="Interfaces\IListener.cs" />
     <Compile Include="IOutputWriter.cs" />
     <Compile Include="Listeners\KolliListener.cs" />
