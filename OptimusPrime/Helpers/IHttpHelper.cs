@@ -7,6 +7,6 @@ namespace OptimusPrime.Helpers
     {
         IEnumerable<Uri> ExtractUris(string message);
 
-        string GetTitleFromUrl(Uri uri);
+        string GetTitleFromUrl(Uri uri, string charset = null);
     }
 }

@@ -24,7 +24,7 @@ namespace OptimusPrime.Helpers
                 yield return new Uri(match.Value);
         }
 
-        public string GetTitleFromUrl(Uri uri)
+        public string GetTitleFromUrl(Uri uri, string charset = null)
         {
             try
             {
@@ -34,7 +34,11 @@ namespace OptimusPrime.Helpers
                 using (var stream = response.GetResponseStream())
                 {
                     var doc = new HtmlDocument();
-                    if (!string.IsNullOrEmpty(response.CharacterSet))
+                    if (!string.IsNullOrEmpty(charset))
+                    {
+                        doc.Load(stream, Encoding.GetEncoding(charset), true);
+                    }
+                    else if (!string.IsNullOrEmpty(response.CharacterSet))
                     {
                         doc.Load(stream, Encoding.GetEncoding(response.CharacterSet), true);
                     }
