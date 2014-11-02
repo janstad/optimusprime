@@ -28,6 +28,9 @@ namespace OptimusPrime.Helpers
 
                 case "play.spotify.com":
                     return new UrlStrategySpotify(uri, _httpHelper);
+
+                case "aftonbladet.se":
+                    return new UrlStrategyAftonbladet(uri, _httpHelper);
             }
             return new UrlStrategyDefault(uri, _httpHelper);
         }

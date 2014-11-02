@@ -89,6 +89,7 @@
     <Compile Include="Enums\StatusCode.cs" />
     <Compile Include="Helpers\IUrlStrategyFactory.cs" />
     <Compile Include="Helpers\UrlStrategy.cs" />
+    <Compile Include="Helpers\UrlStrategyAftonbladet.cs" />
     <Compile Include="Helpers\UrlStrategyDefault.cs" />
     <Compile Include="Helpers\HttpHelper.cs" />
     <Compile Include="Helpers\IUrlStrategy.cs" />
