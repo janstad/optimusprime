@@ -14,7 +14,7 @@ namespace OptimusPrime.Helpers
 
         public override string ExtractInformationFromUrl()
         {
-            return _helper.GetTitleFromUrl(Uri, "utf-8");
+            return _helper.GetTitleFromUrl(Uri, "utf-8").Replace("Spotify Web Player - ", string.Empty);
         }
     }
 }
