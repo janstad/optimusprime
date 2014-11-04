@@ -15,7 +15,8 @@ namespace OptimusPrime.Helpers
 
         public override string ExtractInformationFromUrl()
         {
-            return _helper.GetTitleFromUrl(Uri).Split('|').FirstOrDefault();
+            var title = _helper.GetTitleFromUrl(Uri).Split('|').FirstOrDefault();
+            return title != null ? title.Trim() : string.Empty;
         }
     }
 }

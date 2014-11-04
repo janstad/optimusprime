@@ -60,6 +60,7 @@
     <Compile Include="Helpers\HttpHelperTests.cs" />
     <Compile Include="Helpers\UrlStrategyImgurTests.cs" />
     <Compile Include="Helpers\UrlStrategyYoutubeTests.cs" />
+    <Compile Include="Helpers\UrlStrategyAftonbladetTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
