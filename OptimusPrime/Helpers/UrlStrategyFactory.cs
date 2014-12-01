@@ -26,6 +26,7 @@ namespace OptimusPrime.Helpers
                 case "youtu.be":
                     return new UrlStrategyYoutube(uri, _httpHelper);
 
+                case "open.spotify.com":
                 case "play.spotify.com":
                     return new UrlStrategySpotify(uri, _httpHelper);
 

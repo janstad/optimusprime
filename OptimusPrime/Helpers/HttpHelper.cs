@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -24,27 +25,47 @@ namespace OptimusPrime.Helpers
                 yield return new Uri(match.Value);
         }
 
-        public string GetTitleFromUrl(Uri uri, string charset = null)
+        public string GetTitleFromUrl(Uri uri)
         {
             try
             {
                 var request = (HttpWebRequest)WebRequest.Create(uri.AbsoluteUri);
                 request.UserAgent = UserAgent;
                 var response = (HttpWebResponse)request.GetResponse();
+                var ms = new MemoryStream();
                 using (var stream = response.GetResponseStream())
                 {
+                    if (stream == null) return string.Empty;
+                    stream.CopyTo(ms);
+                }
+                using (ms)
+                {
+                    ms.Position = 0;
+                    var charset = Encoding.ASCII.EncodingName;
                     var doc = new HtmlDocument();
-                    if (!string.IsNullOrEmpty(charset))
+                    if (!string.IsNullOrEmpty(response.CharacterSet) && response.CharacterSet != null)
                     {
-                        doc.Load(stream, Encoding.GetEncoding(charset), true);
+                        charset = (response.CharacterSet);
                     }
-                    else if (!string.IsNullOrEmpty(response.CharacterSet))
+                    doc.Load(ms, Encoding.GetEncoding(charset), true);
+                    var html = doc.DocumentNode.OuterHtml;
+                    var charsetStart = html.IndexOf("charset=\"", StringComparison.InvariantCulture);
+                    var offset = 0;
+                    if (charsetStart <= 0)
                     {
-                        doc.Load(stream, Encoding.GetEncoding(response.CharacterSet), true);
+                        charsetStart = html.IndexOf("charset=", StringComparison.InvariantCulture);
+                        offset = 1;
                     }
-                    else
+                    if (charsetStart > 0)
                     {
-                        doc.Load(stream, true);
+                        charsetStart += 9 - offset;
+                        var charsetEnd = html.IndexOfAny(new[] { ' ', '\"', ';' }, charsetStart);
+                        var realCharset = html.Substring(charsetStart, charsetEnd - charsetStart);
+                        if (!realCharset.Equals(charset))
+                        {
+                            ms.Position = 0;
+                            doc.Load(ms, Encoding.GetEncoding(realCharset), false);
+                        }
                     }
                     var titleNode = doc.DocumentNode.SelectSingleNode("//title");
                     return titleNode == null ? string.Empty : HttpUtility.HtmlDecode(titleNode.InnerText).Replace("\n", "");
